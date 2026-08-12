@@ -38,37 +38,44 @@ public class AuthService {
     @Value("${jwt.refresh-token-expiration}")
     private long refreshTokenExpiration;
 
-    public AuthResponse register(RegisterRequest rq){
-        if(userRepository.existsByEmail(rq.email())){
+    public AuthResponse register(RegisterRequest request) {
+        if (userRepository.existsByEmail(request.email())) {
             throw new IllegalArgumentException("Cet email est déjà utilisé");
         }
-        if (userRepository.existsByUsername(rq.username())){
+        if (userRepository.existsByUsername(request.username())) {
             throw new IllegalArgumentException("Ce nom d'utilisateur est déjà pris");
         }
+
         User user = User.builder()
-                .username(rq.username())
-                .email(rq.email())
-                .password(passwordEncoder.encode(rq.password()))
+                .username(request.username())
+                .email(request.email())
+                .password(passwordEncoder.encode(request.password()))
                 .role(Role.USER)
                 .build();
 
-        return genererTokens(new UserPrincipal(user));
+        User savedUser = userRepository.save(user); // on récupère l'entité persistée (avec son id)
+
+        return genererTokens(savedUser);
     }
 
-    public AuthResponse login(LoginRequest lr){
-        try{
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(lr.email(),lr.password()));
-
-        } catch (Exception e){
+    public AuthResponse login(LoginRequest request) {
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.email(), request.password())
+            );
+        } catch (Exception e) {
             throw new BadCredentialsException("Email ou mot de passe incorrect");
         }
-        User user = userRepository.findByEmail(lr.email())
-                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur introuvable : "+ lr.email()));
-        return genererTokens(new UserPrincipal(user));
+
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur introuvable"));
+
+        return genererTokens(user);
     }
 
-    public AuthResponse refresh(RefreshRequest rr){
-        String refreshTokenStr = rr.refreshToken();
+    public AuthResponse refresh(RefreshRequest request) {
+        String refreshTokenStr = request.refreshToken();
+
         RefreshToken storedToken = refreshTokenRepository.findByToken(refreshTokenStr)
                 .orElseThrow(() -> new BadCredentialsException("Refresh token invalide"));
 
@@ -82,28 +89,26 @@ public class AuthService {
 
         User user = storedToken.getUser();
 
-        // Rotation : on révoque l'ancien refresh token et on en émet un nouveau
         storedToken.setRevoked(true);
         refreshTokenRepository.save(storedToken);
 
-        return genererTokens(new UserPrincipal(user));
+        return genererTokens(user);
     }
 
-    public void logout(String refreshTokenStr){
+    public void logout(String refreshTokenStr) {
         refreshTokenRepository.findByToken(refreshTokenStr)
-                .ifPresent(refreshToken -> {
-                    refreshToken.setRevoked(true);
-                    refreshTokenRepository.save(refreshToken);
+                .ifPresent(token -> {
+                    token.setRevoked(true);
+                    refreshTokenRepository.save(token);
                 });
     }
 
+    // --- Signature changée : prend directement un User, plus besoin de re-fetch ---
+    private AuthResponse genererTokens(User user) {
+        UserPrincipal principal = new UserPrincipal(user);
 
-    private AuthResponse genererTokens(UserPrincipal principal) {
         String accessToken = jwtService.generateAccessToken(principal);
         String refreshToken = jwtService.generateRefreshToken(principal);
-
-        User user = userRepository.findById(principal.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur introuvable"));
 
         RefreshToken entity = RefreshToken.builder()
                 .token(refreshToken)

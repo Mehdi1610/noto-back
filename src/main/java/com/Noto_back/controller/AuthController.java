@@ -5,6 +5,7 @@ import com.Noto_back.dto.LoginRequest;
 import com.Noto_back.dto.RefreshRequest;
 import com.Noto_back.dto.RegisterRequest;
 import com.Noto_back.service.AuthService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/auth")
+@Tag(name= "Auth")
 public class AuthController {
 
     private final AuthService authService;
