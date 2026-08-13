@@ -8,8 +8,10 @@ import com.Noto_back.exceptions.ResourceNotFoundException;
 import com.Noto_back.mapper.TacheMapper;
 import com.Noto_back.model.Dossier;
 import com.Noto_back.model.Tache;
+import com.Noto_back.model.User;
 import com.Noto_back.repository.DossierRepository;
 import com.Noto_back.repository.TacheRepository;
+import com.Noto_back.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,11 +26,15 @@ public class TacheService {
     private final TacheRepository tacheRepository;
     private final DossierRepository dossierRepository;
     private final TacheMapper tacheMapper;
+    private final UserRepository userRepository;
 
-    // --- CREATE ---
+    // --- CREATE : Dans un dossier---
     public TacheResponse creerTache(Long userId, Long dossierId, TacheCreateRequest request) {
         Dossier dossier = dossierRepository.findByIdAndUserId(dossierId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Dossier introuvable"));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur introuvable"));
 
         Tache tache = Tache.builder()
                 .titre(request.titre())
@@ -36,9 +42,36 @@ public class TacheService {
                 .dateEcheance(request.dateEcheance())
                 .priorite(request.priorite())
                 .dossier(dossier)
+                .user(user)
                 .build();
 
         return tacheMapper.toResponse(tacheRepository.save(tache));
+    }
+
+    // --- CREATE : tâche racine, sans dossier ---
+    public TacheResponse creerTacheRacine(Long userId, TacheCreateRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur introuvable"));
+
+        Tache tache = Tache.builder()
+                .titre(request.titre())
+                .description(request.description())
+                .dateEcheance(request.dateEcheance())
+                .priorite(request.priorite())
+                .dossier(null)
+                .user(user)
+                .build();
+
+        return tacheMapper.toResponse(tacheRepository.save(tache));
+    }
+
+    // --- READ : tâches racines ---
+    @Transactional(readOnly = true)
+    public List<TacheResponse> listerTachesRacines(Long userId) {
+        return tacheRepository.findByUserIdAndDossierIsNull(userId)
+                .stream()
+                .map(tacheMapper::toResponse)
+                .toList();
     }
 
     // --- READ : toutes les tâches d'un dossier ---

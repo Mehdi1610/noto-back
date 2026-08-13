@@ -44,6 +44,10 @@ public class Tache {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dossier_id", nullable = false)
+    @JoinColumn(name = "dossier_id")
     private Dossier dossier;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }
