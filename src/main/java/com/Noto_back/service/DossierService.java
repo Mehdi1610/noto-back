@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -59,7 +58,7 @@ public class DossierService {
 
     // --- READ : arborescence complète ---
     @Transactional(readOnly = true)
-    public List<DossierTreeResponse> obtenirArborescence(Long userId) {
+    public List<DossierTreeResponse>obtenirArborescence(Long userId) {
         List<Dossier> tousLesDossiers = dossierRepository.findByUserId(userId);
 
         // Regroupe les dossiers par parentId (null = racine)
@@ -92,7 +91,10 @@ public class DossierService {
 
         return new DossierTreeResponse(
                 dossier.getId(), dossier.getNom(), dossier.getDescription(),
-                dossier.getCouleur(), sousDossiers, taches
+                dossier.getCouleur(),
+                dossier.getParent() != null ? dossier.getParent().getId() : null,
+                dossier.getParent() != null ? dossier.getParent().getNom() : null,
+                sousDossiers, taches
         );
     }
 
@@ -106,7 +108,7 @@ public class DossierService {
 
         List<DossierTreeResponse> sousDossiers = sousDossiersDirects.stream()
                 .map(sd -> new DossierTreeResponse(sd.getId(), sd.getNom(), sd.getDescription(),
-                        sd.getCouleur(), List.of(), List.of())) // pas de récursivité profonde ici, juste le niveau direct
+                        sd.getCouleur(), dossierId, dossier.getNom(), List.of(), List.of())) // pas de récursivité profonde ici, juste le niveau direct
                 .toList();
 
         List<TacheResponse> taches = dossier.getTaches().stream()
@@ -117,7 +119,10 @@ public class DossierService {
                 .toList();
 
         return new DossierTreeResponse(dossier.getId(), dossier.getNom(), dossier.getDescription(),
-                dossier.getCouleur(), sousDossiers, taches);
+                dossier.getCouleur(),
+                dossier.getParent() != null ? dossier.getParent().getId() : null,
+                dossier.getParent() != null ? dossier.getParent().getNom() : null,
+                sousDossiers, taches);
     }
 
     // --- UPDATE ---

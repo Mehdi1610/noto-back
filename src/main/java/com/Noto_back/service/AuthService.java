@@ -60,17 +60,19 @@ public class AuthService {
 
     public AuthResponse login(LoginRequest request) {
         try {
+            User user = userRepository.findByEmail(request.email())
+                    .orElseThrow(() -> new ResourceNotFoundException("Utilisateur introuvable"));
+
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.email(), request.password())
             );
+            return genererTokens(user);
         } catch (Exception e) {
             throw new BadCredentialsException("Email ou mot de passe incorrect");
         }
 
-        User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur introuvable"));
 
-        return genererTokens(user);
+
     }
 
     public AuthResponse refresh(RefreshRequest request) {
