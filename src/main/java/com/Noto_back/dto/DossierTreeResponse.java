@@ -7,6 +7,8 @@ public record DossierTreeResponse(
         String nom,
         String description,
         String couleur,
+        Long parentId,
+        String parentNom,
         List<DossierTreeResponse> sousDossiers,
         List<TacheResponse> taches
 ) {
