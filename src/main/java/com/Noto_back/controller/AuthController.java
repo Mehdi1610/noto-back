@@ -8,6 +8,8 @@ import com.Noto_back.service.AuthService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,8 +25,14 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @Value("${app.registration.enabled}")
+    private boolean registrationEnabled;
+
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest registerRequest){
+        if (!registrationEnabled) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Les inscriptions sont désactivées");
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(registerRequest));
     }
 
