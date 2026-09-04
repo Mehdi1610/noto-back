@@ -32,7 +32,12 @@
 		<jacoco.check.skip>false</jacoco.check.skip>
 		<mapstruct.version>1.6.3</mapstruct.version>
 		<jjwt.version>0.12.6</jjwt.version>
+		<sonar.organization>mehdi1610</sonar.organization>
 	</properties>
+
+
+
+
 
 	<dependencies>
 		<dependency>
@@ -152,6 +157,11 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.sonarsource.scanner.maven</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>4.0.0.4121</version>
+			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
