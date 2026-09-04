@@ -156,6 +156,18 @@
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.8.13</version>
+				<configuration>
+					<excludes>
+						<!-- Exclure la classe principale Spring -->
+						<exclude>**/NotoBackApplication.class</exclude>
+						<!-- Exclure les DTOs, modèles, mappers, configs et exceptions -->
+						<exclude>**/dto/**</exclude>
+						<exclude>**/model/**</exclude>
+						<exclude>**/mapper/**</exclude>
+						<exclude>**/config/**</exclude>
+						<exclude>**/exceptions/**</exclude>
+					</excludes>
+				</configuration>
 				<executions>
 					<execution>
 						<goals>
