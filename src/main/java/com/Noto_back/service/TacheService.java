@@ -74,6 +74,15 @@ public class TacheService {
                 .toList();
     }
 
+    // --- READ :toutes les tâches d'un user ---
+    @Transactional(readOnly = true)
+    public List<TacheResponse> listerTaches(Long userId) {
+        return tacheRepository.findByUserId(userId)
+                .stream()
+                .map(tacheMapper::toResponse)
+                .toList();
+    }
+
     // --- READ : toutes les tâches d'un dossier ---
     @Transactional(readOnly = true)
     public List<TacheResponse> listerTachesParDossier(Long userId, Long dossierId) {

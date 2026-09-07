@@ -1,5 +1,6 @@
 package com.Noto_back.dto;
 
+import com.Noto_back.model.Dossier;
 import com.Noto_back.model.Priorite;
 import com.Noto_back.model.StatutTache;
 
@@ -11,6 +12,7 @@ public record TacheResponse(
         String description,
         StatutTache statut,
         LocalDate dateEcheance,
-        Priorite priorite
+        Priorite priorite,
+        DossierResponse dossier
 ) {
 }
