@@ -25,4 +25,6 @@ public interface TacheRepository extends JpaRepository<Tache,Long> {
 
     // Tâches racines d'un utilisateur (pas de dossier)
     List<Tache> findByUserIdAndDossierIsNull(Long userId);
+
+    List<Tache> findByUserId(Long userId);
 }

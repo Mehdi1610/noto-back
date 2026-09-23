@@ -62,6 +62,14 @@ public class TacheController {
         return ResponseEntity.ok(tacheService.listerTachesRacines(principal.getId()));
     }
 
+    // Lister toutes les tâches
+    @GetMapping("/api/taches")
+    public ResponseEntity<List<TacheResponse>> listerTaches(
+            @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        return ResponseEntity.ok(tacheService.listerTaches(principal.getId()));
+    }
+
     @GetMapping("/api/taches/{id}")
     public ResponseEntity<TacheResponse> obtenirTache(
             @AuthenticationPrincipal UserPrincipal principal,

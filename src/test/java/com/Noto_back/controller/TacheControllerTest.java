@@ -1,10 +1,7 @@
 package com.Noto_back.controller;
 
 
-import com.Noto_back.dto.TacheCreateRequest;
-import com.Noto_back.dto.TacheResponse;
-import com.Noto_back.dto.TacheStatutUpdateRequest;
-import com.Noto_back.dto.TacheUpdateRequest;
+import com.Noto_back.dto.*;
 import com.Noto_back.model.Priorite;
 import com.Noto_back.model.Role;
 import com.Noto_back.model.StatutTache;
@@ -33,6 +30,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -78,6 +76,7 @@ class TacheControllerTest {
                 .role(Role.USER)
                 .build();
 
+        DossierResponse dossierResponse = new DossierResponse(1L, "dossierTest", "test", "BLEU",null, LocalDateTime.now());
         principal = new UserPrincipal(user);
 
         // Injecte l'utilisateur authentifié dans le SecurityContext pour @AuthenticationPrincipal
@@ -92,7 +91,9 @@ class TacheControllerTest {
                 "Description",
                 StatutTache.A_FAIRE,
                 LocalDate.now(),
-                Priorite.MOYENNE
+                Priorite.MOYENNE,
+                dossierResponse
+
         );
     }
 

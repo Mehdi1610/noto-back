@@ -85,7 +85,7 @@ public class DossierService {
         List<TacheResponse> taches = dossier.getTaches().stream()
                 .map(t -> new TacheResponse(
                         t.getId(), t.getTitre(), t.getDescription(),
-                        t.getStatut(), t.getDateEcheance(), t.getPriorite()
+                        t.getStatut(), t.getDateEcheance(), t.getPriorite(), dossierMapper.toResponse(t.getDossier())
                 ))
                 .toList();
 
@@ -114,7 +114,7 @@ public class DossierService {
         List<TacheResponse> taches = dossier.getTaches().stream()
                 .map(t -> new TacheResponse(
                         t.getId(), t.getTitre(), t.getDescription(),
-                        t.getStatut(), t.getDateEcheance(), t.getPriorite()
+                        t.getStatut(), t.getDateEcheance(), t.getPriorite(), dossierMapper.toResponse(t.getDossier())
                 ))
                 .toList();
 

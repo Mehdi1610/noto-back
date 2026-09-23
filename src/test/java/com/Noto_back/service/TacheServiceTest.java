@@ -1,9 +1,6 @@
 package com.Noto_back.service;
 
-import com.Noto_back.dto.TacheCreateRequest;
-import com.Noto_back.dto.TacheResponse;
-import com.Noto_back.dto.TacheStatutUpdateRequest;
-import com.Noto_back.dto.TacheUpdateRequest;
+import com.Noto_back.dto.*;
 import com.Noto_back.exceptions.ResourceNotFoundException;
 import com.Noto_back.mapper.TacheMapper;
 import com.Noto_back.model.Dossier;
@@ -24,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,7 +71,9 @@ class TacheServiceTest {
                 .dossier(dossier)
                 .build();
 
-        tacheResponse = new TacheResponse(100L, "Tâche Test", "Description", StatutTache.A_FAIRE, null, Priorite.MOYENNE);
+        DossierResponse dossierResponse = new DossierResponse(1L, "dossierTest", "test", "BLEU",null, LocalDateTime.now());
+
+        tacheResponse = new TacheResponse(100L, "Tâche Test", "Description", StatutTache.A_FAIRE, null, Priorite.MOYENNE, dossierResponse);
     }
 
     @Nested
